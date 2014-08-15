@@ -8,7 +8,10 @@ module OpenInApp
     protected
       def open_in_app_device?
         mobile_device = request.env[Rack::MobileDetect::X_HEADER]
-        !!(mobile_device && %w(iphone ipod).include?(mobile_device.downcase))
+        !!(mobile_device && (
+          %w(iphone ipod ipad).include?(mobile_device.downcase) ||
+          %w(android).include?(mobile_device.downcase)
+          ))
       end
 
       def open_in_app_supported_request?
@@ -41,6 +44,7 @@ module OpenInApp
       end
 
       def open_in_app
+        cookie[:mobile_activation] = True
         if open_in_app?
           render(template: 'open_in_app', layout: false) and return false
         end
